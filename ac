@@ -1,0 +1,179 @@
+<?php
+
+require_once('vendor/autoload.php');
+
+
+
+
+\Stripe\Stripe::setApiKey('sk_test_51MpZFHSCidpuEbq29qWOGPnmDublbcyy6kxTXRAU6wrWYs9etbr0PYRC2JNpgPlm0uWuanK1hS4O02PRUZSgZv6u00IeNI56fS');
+
+  $token = $_POST['stripeToken'];
+if(isset($token)){
+  
+
+ 
+  /*$charge =  \Stripe\PaymentIntent::create([
+    'amount' => 1099*100,
+    'currency' => 'inr',
+    'description' => 'Payment for service XYZ', // A description of the payment
+    'payment_method_types' => ['card'],
+    'capture_method' => 'manual',
+    'metadata' => [ // Any additional information you want to attach to the payment
+      'customer_name' => 'John Doe',
+      'customer_email' => 'johndoe@example.com',
+  ]
+  ]);*/
+
+  $charge =  \Stripe\PaymentIntent::create([
+    'amount' => 100*100, // The amount you want to charge in cents
+    'payment_method_types' => ['card'],
+    'currency' => 'usd', // The currency you want to charge in
+    'application_fee_amount' => null, // A fee in cents that will be applied to the payment and transferred to the platform account
+    'capture_method' => 'automatic', // Whether to capture the payment immediately (automatic) or later (manual)
+    'confirm' => false, // Whether to immediately confirm the payment (true) or save it as a draft (false)
+    'confirmation_method' => 'automatic', // How the payment confirmation is done (automatic or manual)
+    'description' => 'Payment for service XYZ', // A description of the payment
+    'metadata' => [ // Any additional information you want to attach to the payment
+        'customer_name' => 'John Doe',
+        'customer_email' => 'johndoe@example.com',
+    ],
+    'receipt_email' => null, // The email address to send a receipt to
+    'setup_future_usage' => null, // Whether to save the payment method for future use (on_session) or off_session
+    'shipping' => null, // Shipping information for the payment
+    'statement_descriptor' => 'Service XYZ', // A short description that appears on the customer's credit card statement
+    'transfer_data' => null, // Information about a transfer to make for the payment
+
+  ]);
+ 
+
+$p_id = $charge->id;
+
+
+
+$intent = \Stripe\PaymentIntent::retrieve($p_id);
+
+/* Stripe\PaymentIntent Object
+(
+    [id] => pi_3MqhIASCidpuEbq219b2Sx7T
+    [object] => payment_intent
+    [amount] => 100000
+    [amount_capturable] => 0
+    [amount_details] => Stripe\StripeObject Object
+        (
+            [tip] => Array
+                (
+                )
+
+        )
+
+    [amount_received] => 0
+    [application] => 
+    [application_fee_amount] => 
+    [automatic_payment_methods] => 
+    [canceled_at] => 
+    [cancellation_reason] => 
+    [capture_method] => automatic
+    [client_secret] => pi_3MqhIASCidpuEbq219b2Sx7T_secret_q1KKRHWwX7Xkqig6cuztgj5oE
+    [confirmation_method] => automatic
+    [created] => 1680028246
+    [currency] => usd
+    [customer] => 
+    [description] => Payment for service XYZ
+    [invoice] => 
+    [last_payment_error] => 
+    [latest_charge] => 
+    [livemode] => 
+    [metadata] => Stripe\StripeObject Object
+        (
+            [customer_email] => johndoe@example.com
+            [customer_name] => John Doe
+        )
+
+    [next_action] => 
+    [on_behalf_of] => 
+    [payment_method] => 
+    [payment_method_options] => Stripe\StripeObject Object
+        (
+            [card] => Stripe\StripeObject Object
+                (
+                    [installments] => 
+                    [mandate_options] => 
+                    [network] => 
+                    [request_three_d_secure] => automatic
+                )
+
+        )
+
+    [payment_method_types] => Array
+        (
+            [0] => card
+        )
+
+    [processing] => 
+    [receipt_email] => 
+    [review] => 
+    [setup_future_usage] => 
+    [shipping] => 
+    [source] => 
+    [statement_descriptor] => Service XYZ
+    [statement_descriptor_suffix] => 
+    [status] => requires_payment_method
+    [transfer_data] => 
+    [transfer_group] => 
+) */
+
+/* 
+
+require_once('path/to/stripe-php/init.php');
+
+\Stripe\Stripe::setApiKey('your_secret_key');
+
+$customer = \Stripe\Customer::create([
+  'email' => 'john.doe@example.com',
+  'name' => 'John Doe',
+  'description' => 'New customer',
+  'address' => [
+    'line1' => '123 Main Street',
+    'city' => 'San Francisco',
+    'state' => 'CA',
+    'postal_code' => '94111',
+    'country' => 'US',
+  ],
+  'phone' => '+1 555-555-5555',
+]);
+
+$paymentIntent = \Stripe\PaymentIntent::create([
+  'amount' => 1000,
+  'currency' => 'usd',
+  'customer' => $customer->id,
+  'description' => 'Test payment',
+]);
+
+echo $paymentIntent;
+
+
+*/
+$paymentIntent = \Stripe\PaymentIntent::retrieve($p_id);
+
+$paymentIntent->capture();
+
+print_r($paymentIntent);
+die;
+$original_intent = \Stripe\PaymentIntent::retrieve($p_id, [
+  'expand' => [$intent->customer, 'payment_method'],
+ ]);
+//$intent->capture(['amount_to_capture' => 750]);
+
+
+
+
+print_r($original_intent);
+}else{
+  echo "nothing";
+}
+
+   
+
+
+
+
